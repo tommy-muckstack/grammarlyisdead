@@ -28,7 +28,7 @@ export function GrLogin({ config, demo, to, signup = false }: { config: Firebase
   const submit = (e: React.FormEvent) => { e.preventDefault();
     if (!config) { setErr("Sign-in isn't configured on this deployment yet."); return; }
     if (mode === "reset") return run(async () => { await resetPassword(config, email); setNote("If that email has an account, a reset link is on its way."); setMode("signin"); });
-    if (step === 1 && mode !== "reset") { setStep(2); return; }
+    if (step === 1) { setStep(2); return; }
     run(async () => { if (mode === "signup") await signUpWithEmail(config, session, email, password); else await signInWithEmail(config, session, email, password); window.location.assign(to); }); };
   const google = () => run(async () => { await signInWithGoogle(config!, session); window.location.assign(to); });
   const provider = (icon: React.ReactNode, label: string, on?: () => void, cls = "") => <button type="button" className={`grl-prov ${cls}`} disabled={on ? busy || !config : true} title={on ? undefined : off} onClick={on}>{icon}<span>{label}</span><Chev /></button>;
