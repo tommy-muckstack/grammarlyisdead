@@ -1,0 +1,29 @@
+import Link from "next/link";
+import { GrNav, GrFoot } from "@/components/GrHome";
+import "./grpricing.css";
+
+type Row = [string, string, string, string, number?];
+const Y = "✓", N = "—";
+const GROUPS: [string, Row[]][] = [
+  ["Writing features", [["Write without mistakes", Y, Y, Y], ["See your writing tone", Y, Y, Y], ["Adjust your writing tone", N, Y, Y], ["Rewrite full sentences", N, Y, Y], ["Write fluently in English", N, Y, Y], ["Use inclusive language", N, Y, Y], ["Keep your citations consistent", N, Y, Y], ["Detect AI generated text", N, Y, Y], ["Catch accidental plagiarism", N, Y, Y], ["Generate text with AI prompts", "100 prompts / month", "2,000 prompts / member / month", "Unlimited prompts / member / month", 72]]],
+  ["Security features", ["Enterprise-grade privacy and security", "Account roles and permissions", "SAML single sign-on", "Feature Management Hub", "SCIM", "Managed mode", "Invite and domain capture", "User groups", "Custom roles", "Application and domain controls", "Client control", "Confidential mode", "Data loss prevention", "Audit Logs API", "Enterprise key management (BYOK)", "Session timeout", "Group-level security controls", "Cost center visibility"].map((n, i): Row => [n, i < 2 ? Y : N, i < 2 ? Y : i === 2 || i === 3 ? (i === 3 ? Y : N) : N, Y])],
+  ["Team features", ["ROI Report", "Effective Communication Score", "Style guide", "Brand tones", "Knowledge Share", "Snippets", "Analytics dashboard"].map((n, i): Row => [n, N, i < 2 ? N : Y, i === 3 ? "Unlimited" : i === 2 ? "1" : Y, i === 6 ? 72 : undefined])],
+  ["Customer support", [["Help center", Y, Y, Y], ["Priority support", N, Y, Y], ["Dedicated support", N, N, Y]]],
+];
+const FAQ = ["What will happen to my Premium subscription if I switch to Pro?", "How secure is Grammarly?", "What forms of payment do you accept?", "Do you offer discounts for educational institutions?", "Can I use Grammarly on my phone?", "How do I cancel my subscription?", "What happens when I reach my AI prompt limit?", "Is there a free trial of Pro?", "Do you offer refunds?", "How do I add team members?", "What is Superhuman?"];
+const Cell = ({ v, pro }: { v: string; pro?: boolean }) => <div className={"c" + (pro ? " pro" : "")}>{v === "✓" ? <i className="ck">✓</i> : v === "—" ? <span className="d">—</span> : <span className="t">{v}</span>}</div>;
+export function GrPricing() {
+  return <div className="gr grp pk">
+    <GrNav />
+    <section className="hd"><h1>Great Writing Starts With a Plan</h1><p>Trusted by over 40 million people and 50,000 organizations</p><div className="lg"><b>ATLASSIAN</b><b>zoom</b><b>databricks</b></div></section>
+    <section className="pl"><div className="pop">Most popular ✦</div><div className="pc">
+      <div className="p"><small>For individuals</small><h3>Free</h3><p>Write without spelling and grammar mistakes.</p><div className="pr"><b>$0</b> USD<span>/ month</span></div><Link href="/login" className="bt o">Create account</Link><ul><li>Write without mistakes</li><li>See your writing tone</li><li>Generate text with 100 AI prompts</li></ul></div>
+      <div className="p m"><small>For eligible individuals and teams</small><h3>Pro</h3><p>Achieve your goals with clear and confident writing.</p><div className="pr"><s>$12</s> USD <em>Try for free</em><span>Email reminder 2 days before trial ends.</span><span className="z">$0 payment today</span></div><Link href="/login" className="bt">Start 7-day Free Trial</Link><h6>Everything in Free, plus:</h6><ul><li>Rewrite full sentences with a click</li><li>Adjust your writing tone with ease</li><li>Write fluently in English</li><li>Unlimited personalized suggestions</li><li>Detect plagiarism and AI generated text</li><li>Generate text with 2,000 AI prompts</li></ul></div>
+      <div className="p"><small>For larger organizations</small><h3>Enterprise</h3><p>Drive results across your organization with Grammarly, available through Superhuman Go.</p><Link href="/login" className="bt o e">Contact Sales</Link><h6>Everything in Pro, plus:</h6><ul><li>Proactive AI that works everywhere</li><li>Dedicated support</li><li>BYOK encryption</li><li>Custom roles and permissions</li><li>Data loss prevention</li><li>Cost center visibility</li></ul></div></div></section>
+    <section className="cp"><h2>Compare Plans</h2>
+      <div className="tb"><div className="hl" />{GROUPS.map(([g, rows]) => <div key={g} className="g"><div className="gh"><b>{g}</b>{g === "Writing features" && <div className="cols"><span>Free</span><span className="pr">Pro</span><span>Enterprise</span></div>}</div>{rows.map(r => <div className="r" key={r[0]} style={r[4] ? { height: r[4] } : undefined}><span className="n">{r[0]} <i>ⓘ</i></span><Cell v={r[1]} /><Cell v={r[2]} pro /><Cell v={r[3]} /></div>)}</div>)}</div></section>
+    <section className="tr"><h2>Trusted by over 40 million people and 50,000 organizations</h2><div className="q">{[["databricks", "“I used to spend 20-30 hours a week reviewing, rewriting, and coaching. Grammarly has cut that by at least half, and that’s allowed my team to scale without more people.”", "Neil Hamilton", "Head of Editorial"], ["hackerone", "“Grammarly reduces the time our team spends reviewing written work. Grammarly brings value to our organization with both productivity and consistency.”", "Debbie Cotton", "Internal Communications Lead"], ["_zapier", "“Grammarly helped us consolidate our existing guides into one place, which included suggestions on how to spell and use our branded terms and partner names.”", "Janine Anderson", "Content Operations Manager"]].map(([l, t, n, r]) => <div key={n}><i /><em>{l}</em><p>{t}</p><b>{n}</b><span>{r}</span></div>)}</div></section>
+    <section className="fq"><h2>Frequently Asked Questions</h2>{FAQ.map(q => <div key={q}>{q}<i>⌄</i></div>)}</section>
+    <GrFoot h={1148} />
+  </div>;
+}
