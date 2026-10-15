@@ -80,8 +80,8 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 
 @media (max-width:600px){
 .grl{align-items:center;padding:0 0 16px}
-.grl-modal{zoom:1;width:100%;border-radius:0;padding:32px;box-shadow:none;align-self:center}
-.grl-head{margin:0 0 24px;min-height:28px;align-items:center}
+.grl-modal{zoom:1;width:100%;border-radius:0;padding:32px 32px 29px;box-shadow:none;align-self:center}
+.grl-head{margin:0 0 22px;min-height:28px;align-items:center}
 .grl-head h1{font-size:20px;font-weight:500;letter-spacing:0}
 .grl-head a{font-size:14px;text-decoration:none;border-bottom:2px solid #027e6f;line-height:18px}
 .grl-field{height:48px;border-radius:4px;padding:0 11px;margin-bottom:16px;border-color:#6d758d;display:flex;align-items:center}
@@ -91,6 +91,7 @@ a{color:var(--ids-color-accent)}button,input,select,textarea{font:inherit;color:
 .grl-cant{font-size:14px;line-height:22px;color:#6d758d;text-decoration:underline;margin:11px 0 17px}
 .grl-prov{height:48px;border-radius:4px;border-color:#6d758d;font:400 14px var(--ids-font-sans);color:#4d536e;gap:12px;padding:0 16px;margin-bottom:8px}
 .grl-prov svg:first-child{width:16px;height:16px}
+.grl-prov:disabled{opacity:1}
 .grl-sso{display:none}
 .grl-or{font-size:14px;margin:16px 0;display:flex;align-items:center;gap:16px;color:#4d536e}.grl-or:before,.grl-or:after{content:"";flex:1;height:1px;background:#e8e9ee}
 .grl-legal{font-size:12px;line-height:18px;color:#6d758d;margin:16px 0 0}
