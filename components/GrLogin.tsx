@@ -28,10 +28,10 @@ export function GrLogin({ config, demo, to, signup = false }: { config: Firebase
   const submit = (e: React.FormEvent) => { e.preventDefault();
     if (!config) { setErr("Sign-in isn't configured on this deployment yet."); return; }
     if (mode === "reset") return run(async () => { await resetPassword(config, email); setNote("If that email has an account, a reset link is on its way."); setMode("signin"); });
-    if (mode === "signin" && step === 1) { setStep(2); return; }
+    if (step === 1 && mode !== "reset") { setStep(2); return; }
     run(async () => { if (mode === "signup") await signUpWithEmail(config, session, email, password); else await signInWithEmail(config, session, email, password); window.location.assign(to); }); };
   const google = () => run(async () => { await signInWithGoogle(config!, session); window.location.assign(to); });
-  const provider = (icon: React.ReactNode, label: string, on?: () => void) => <button type="button" className="grl-prov" disabled={on ? busy || !config : true} title={on ? undefined : off} onClick={on}>{icon}<span>{label}</span><Chev /></button>;
+  const provider = (icon: React.ReactNode, label: string, on?: () => void, cls = "") => <button type="button" className={`grl-prov ${cls}`} disabled={on ? busy || !config : true} title={on ? undefined : off} onClick={on}>{icon}<span>{label}</span><Chev /></button>;
   const swap = (m: typeof mode) => (e: React.MouseEvent) => { e.preventDefault(); setMode(m); setStep(1); setErr(""); };
   return <main className="grl">
     <Backdrop />
@@ -42,12 +42,12 @@ export function GrLogin({ config, demo, to, signup = false }: { config: Firebase
       {mode === "signup" && <>{provider(G, "Continue with Google", google)}{provider(AP, "Continue with Apple")}<div className="grl-or">Or</div></>}
       <form onSubmit={submit}>
         <label className="grl-field"><span>{mode === "signup" ? "Work or school email" : "Email"}</span><input type="email" required autoComplete="email" placeholder={mode === "signup" ? "Work or school email" : "Email"} value={email} onChange={e => setEmail(e.target.value)} readOnly={step === 2} aria-label="Email" /></label>
-        {step === 2 && mode !== "reset" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} autoFocus placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" aria-label="Password" /></label>}
-        {mode === "signup" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" aria-label="Password" /></label>}
+        {step === 2 && mode === "signin" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} autoFocus placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" aria-label="Password" /></label>}
+        {mode === "signup" && step === 2 && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} autoFocus placeholder="Create a password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" aria-label="Password" /></label>}
         <button className="grl-cta" disabled={busy}>{mode === "signup" ? "Agree and Sign up" : mode === "reset" ? "Send reset link" : step === 1 ? "Continue" : "Sign in"}</button>
       </form>
       {mode === "signin" && <><a href="#" className="grl-cant" onClick={swap("reset")}>Can&apos;t sign in?</a>
-        {provider(G, "Sign in with Google", google)}{provider(FB, "Sign in with Facebook")}{provider(AP, "Sign in with Apple")}{provider(SSO, "Sign in with Single Sign On")}</>}
+        {provider(G, "Sign in with Google", google)}{provider(FB, "Sign in with Facebook")}{provider(AP, "Sign in with Apple")}{provider(SSO, "Sign in with Single Sign On", undefined, "grl-sso")}</>}
       {err && <p role="alert" className="grl-err">{err}</p>}{note && <p role="status" className="grl-note">{note}</p>}
       <p className="grl-legal">Grammarly is part of Superhuman, Inc. By continuing, you agree to the Superhuman <a href="#">ToS</a> and <a href="#">Privacy Policy</a>. California residents, see our <a href="#">CA Notice at Collection</a>.</p>
       <p className="grl-legal">This site is protected by reCAPTCHA and the Google <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a> apply.</p>
