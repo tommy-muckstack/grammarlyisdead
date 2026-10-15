@@ -39,20 +39,21 @@ export function GrLogin({ config, demo, to, signup = false }: { config: Firebase
     <section className="grl-modal">
       <div className="grl-head"><h1>{mode === "signup" ? "Sign up" : mode === "reset" ? "Reset password" : "Sign in"}</h1>
         {mode === "signup" ? <a href="#" onClick={swap("signin")}>I have an account</a> : mode === "reset" ? <a href="#" onClick={swap("signin")}>Back to sign in</a> : <a href="#" onClick={swap("signup")}>I don&apos;t have an account</a>}</div>
-      {!config && <p role="status" className="grl-note">Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.</p>}
       {mode === "signup" && <>{provider(G, "Continue with Google", google)}{provider(AP, "Continue with Apple")}<div className="grl-or">Or</div></>}
       <form onSubmit={submit}>
-        <label className="grl-field"><span>{mode === "signup" ? "Work or school email" : "Email"}</span><input type="email" required autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} readOnly={step === 2} aria-label="Email" /></label>
-        {step === 2 && mode !== "reset" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} autoFocus value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" aria-label="Password" /></label>}
-        {mode === "signup" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" aria-label="Password" /></label>}
+        <label className="grl-field"><span>{mode === "signup" ? "Work or school email" : "Email"}</span><input type="email" required autoComplete="email" placeholder={mode === "signup" ? "Work or school email" : "Email"} value={email} onChange={e => setEmail(e.target.value)} readOnly={step === 2} aria-label="Email" /></label>
+        {step === 2 && mode !== "reset" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} autoFocus placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="current-password" aria-label="Password" /></label>}
+        {mode === "signup" && <label className="grl-field"><span>Password</span><input type="password" required minLength={6} placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" aria-label="Password" /></label>}
         <button className="grl-cta" disabled={busy}>{mode === "signup" ? "Agree and Sign up" : mode === "reset" ? "Send reset link" : step === 1 ? "Continue" : "Sign in"}</button>
       </form>
       {mode === "signin" && <><a href="#" className="grl-cant" onClick={swap("reset")}>Can&apos;t sign in?</a>
         {provider(G, "Sign in with Google", google)}{provider(FB, "Sign in with Facebook")}{provider(AP, "Sign in with Apple")}{provider(SSO, "Sign in with Single Sign On")}</>}
       {err && <p role="alert" className="grl-err">{err}</p>}{note && <p role="status" className="grl-note">{note}</p>}
-      {demo && <button type="button" className="grl-demo" onClick={async () => { const r = await fetch(`${BP}/api/session/demo`, { method: "POST" }); if (r.ok) window.location.assign(to); }}>Use the demo account</button>}
-      <p className="grl-legal">This site is an open-source project and is not affiliated with the app it replaces. By continuing, you agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
-      {mode === "signup" && <p className="grl-legal">You also agree to receive product-related marketing emails from us, which you can unsubscribe from at any time.</p>}
+      <p className="grl-legal">Grammarly is part of Superhuman, Inc. By continuing, you agree to the Superhuman <a href="#">ToS</a> and <a href="#">Privacy Policy</a>. California residents, see our <a href="#">CA Notice at Collection</a>.</p>
+      <p className="grl-legal">This site is protected by reCAPTCHA and the Google <a href="#">Privacy Policy</a> and <a href="#">Terms of Service</a> apply.</p>
+      {mode === "signup" && <p className="grl-legal">You also agree to receive product-related marketing emails from Grammarly, which you can unsubscribe from at any time.</p>}
     </section>
+    <div className="grl-extra">{!config && <p role="status" className="grl-note">Sign-in not configured. Email and Google sign-in turn on once Firebase is set up.</p>}{demo && <button type="button" className="grl-demo" onClick={async () => { const r = await fetch(`${BP}/api/session/demo`, { method: "POST" }); if (r.ok) window.location.assign(to); }}>Use the demo account</button>}</div>
+    <p className="grl-oss">GrammarlyIsDead is an independent open-source project, not affiliated with or endorsed by Grammarly or Superhuman.</p>
   </main>;
 }
