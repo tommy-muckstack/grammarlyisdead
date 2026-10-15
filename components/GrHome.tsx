@@ -1,3 +1,5 @@
+import { MeasuredPage } from "./m/MeasuredPage";
+import hm from "./m/home390.json";
 import Link from "next/link";
 import "./pk.css";
 import "./grhome.css";
@@ -21,7 +23,8 @@ const LOGOS2 = ["Arizona State", "Expensify", "HackerOne", "AFFINITY X", "salesf
 const ROI = [["ModMed", "20 days", "saved annually per user", "Mihai Fonoage", "VP of Engineering"], ["databricks", "50%", "fewer writing and editing hours", "Jenna Kozel-King", "VP of Corporate Marketing"], ["zoom", "$210K", "saved in the first nine months", "Lauren Reed", "Content Strategist"], ["FROST", "3x", "faster editing", "Tonya Fowler", "Global Research"]];
 const ROWS: [string, string, number, number][] = [["Better writing,<br />better results", "Be perfectly professional, clear, and convincing in a few clicks, not a few hours.", 580, 56], ["Keep your voice,<br />make it clear", "Get suggestions that help you strike the right tone without losing your authentic voice—whether writing for yourself or your brand.", 580, 52], ["Get a read<br />on your writing", "See your work through your audience's eyes and make sure your message is understood the first time.", 580, 60]];
 export function GrHome() {
-  return <div className="gr pk">
+  return <><MeasuredPage data={hm as never} className="gr-hm" />
+  <div className="gr pk mp-desk">
     <GrNav />
     <section className="s hero"><h1>Think big. We&apos;ll take care of the details.</h1><p className="sub">Work with an AI partner that helps turn your thoughts into writing that&apos;s clear, credible, and impossible to ignore.</p><GrCtas apple /><p className="ack">By signing up, you agree to the <u>Terms and Conditions</u> and <u>Privacy Policy</u>.<br />California residents, see our <u>CA Notice at Collection</u>.</p></section>
     <section className="s cards">{FEAT.map(([t, d, c], i) => <div key={t + i} className="fc"><div className={"im " + c}><i /></div><b>{t}</b><span>{d}</span></div>)}<button className="nx" aria-label="Next">›</button><div className="dots" aria-hidden><i /><i /><i /><i /></div></section>
@@ -38,5 +41,5 @@ export function GrHome() {
     <section className="s sup"><div className="img"><i /><i /></div><div className="tx"><h2>Grammarly is now a part of Superhuman</h2><p>Love the confidence Grammarly gives you in your writing? Superhuman extends that same feeling to every doc, tab, and tool with apps and agents built to amplify you and your work.</p><a className="bt k">Learn more →</a></div></section>
     <section className="s gw"><div className="tx"><h2>Great writing<br />gets work done</h2><p>Work smarter with the AI writing leader for more than a decade.</p><GrCtas /><p className="ack">By signing up, you agree to the <u>Terms and Conditions</u> and <u>Privacy Policy</u>. California residents, see our <u>CA Notice at Collection</u>.</p></div><div className="bl"><i /><i /><i /></div></section>
     <GrFoot />
-  </div>;
+  </div></>;
 }
