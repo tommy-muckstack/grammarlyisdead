@@ -25,9 +25,8 @@
 .gr-foot{min-height:0!important}.gr-foot .bt{position:static!important;margin-top:40px;flex-direction:row;justify-content:space-between;align-items:center;gap:12px;font-size:11px}.gr-foot .bt span{max-width:200px;text-align:right;line-height:14px}
 }
 
-.gr-cta .ap{display:none}
 @media(max-width:900px){
-.gr-cta .ap{display:flex}.gr-nav{padding:0 16px}.gr-nav nav,.gr-nav .t{display:none}
+.gr-nav{padding:0 16px}.gr-nav nav,.gr-nav .t{display:none}
 .gr .s.hero{height:auto;min-height:0;padding:72px 16px 0;text-align:center}
 .hero h1{font-size:30px;line-height:34px;padding:0;letter-spacing:-.01em}
 .hero .sub{font-size:16px;line-height:24px;margin:24px 0 0;font-weight:400;max-width:none}
