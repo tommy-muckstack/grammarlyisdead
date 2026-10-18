@@ -6,6 +6,7 @@ import type { Doc } from "@/lib/writing/docs";
 import { CATEGORIES, type Category, type Goals, type Issue, type Speller } from "@/lib/writing/types";
 import { applyIssue, checkText, computeStats, fmtMin } from "@/lib/writing/check";
 import { loadSpeller } from "@/lib/writing/speller";
+import { track, EVENTS } from "@/lib/analytics";
 const colorOf = (c: Category) => CATEGORIES.find(x => x.id === c)!.color;
 function Ring({ score }: { score: number | null }) {
   const r = 34, c = 2 * Math.PI * r, v = score ?? 0; const col = score === null ? "#C9CDD3" : score >= 90 ? "#1DA67A" : score >= 70 ? "#E8A317" : "#E5484D";
@@ -28,14 +29,14 @@ export function Editor({ userId, docId }: { userId: string; docId: string }) {
   const shown = issues.filter(i => filter === "all" || i.category === filter);
   if (!ready) return <main className="gwe"><p className="ids-muted" style={{ padding: 24 }}>Loading…</p></main>;
   if (!doc) return <main className="gwe"><div className="ids-card" style={{ margin: 40, padding: 32 }}><h2>Document not found</h2><Link href="/app">Back to your documents</Link></div></main>;
-  const accept = (i: Issue, rep: string) => { const next = applyIssue(text, i, rep); setText(next); update({ text: next }); setActive(null); const pos = i.start + rep.length; setTimeout(() => { ta.current?.focus(); ta.current?.setSelectionRange(pos, pos); }, 0); };
-  const dismiss = (i: Issue) => update({ ignored: [...doc.ignored, `${i.rule}:${i.text.toLowerCase()}`] });
+  const accept = (i: Issue, rep: string) => { track(EVENTS.app_suggestion_accepted, { category: i.category, rule: i.rule, alternative: rep !== i.replacements[0] }); const next = applyIssue(text, i, rep); setText(next); update({ text: next }); setActive(null); const pos = i.start + rep.length; setTimeout(() => { ta.current?.focus(); ta.current?.setSelectionRange(pos, pos); }, 0); };
+  const dismiss = (i: Issue) => { track(EVENTS.app_suggestion_dismissed, { category: i.category, rule: i.rule }); update({ ignored: [...doc.ignored, `${i.rule}:${i.text.toLowerCase()}`] }) };
   const caret = () => { const p = ta.current?.selectionStart ?? 0; const hit = issues.find(i => p >= i.start && p <= i.end && ta.current?.selectionStart === ta.current?.selectionEnd); setActive(hit?.id ?? null); if (hit) cards.current[hit.id]?.scrollIntoView({ block: "nearest", behavior: "smooth" }); };
   const focusIssue = (i: Issue) => { setActive(i.id); ta.current?.focus(); ta.current?.setSelectionRange(i.start, i.end); };
   const segs: React.ReactNode[] = []; let pos = 0;
   for (const i of issues) { if (i.start > pos) segs.push(text.slice(pos, i.start)); segs.push(<mark key={i.id} className={"gw__u gw__u--" + i.category + (active === i.id ? " is-active" : "")} data-issue={i.rule}>{text.slice(i.start, i.end)}</mark>); pos = i.end; }
   segs.push(text.slice(pos) + "\n​");
-  const setGoal = <K extends keyof Goals>(k: K, v: Goals[K]) => update({ goals: { ...goals, [k]: v } });
+  const setGoal = <K extends keyof Goals>(k: K, v: Goals[K]) => { track(EVENTS.app_goal_changed, { goal: k, value: v }); update({ goals: { ...goals, [k]: v } }); };
   return <div className="gwe"><div className="gwe__top"><Link href="/app" className="iconbtn" style={{ textDecoration: "none", color: "inherit" }}>← Documents</Link>
     <input className="gwe__title" aria-label="Document title" value={doc.title} onChange={e => update({ title: e.target.value })} /><span style={{ flex: 1 }} />
     <span className="ids-muted" style={{ fontSize: 13 }}>{speller ? `${stats.words} words` : "Loading dictionary…"}</span></div>
@@ -44,7 +45,7 @@ export function Editor({ userId, docId }: { userId: string; docId: string }) {
         <textarea ref={ta} className="gw__ta" aria-label="Document text" spellCheck={false} placeholder="Start typing or paste your text here…" value={text} onChange={e => setText(e.target.value)} onSelect={caret} onClick={caret} onKeyUp={caret} /></div></div></main>
       <aside className="gwe__panel" aria-label="Writing assistant">
         <div className="gwp__score"><Ring score={stats.score} /><div><b style={{ fontSize: 17 }}>Overall score</b><div className="ids-muted" style={{ fontSize: 13 }}>{stats.score === null ? "Write at least a sentence to get a score." : issues.length ? `${issues.length} suggestion${issues.length === 1 ? "" : "s"} to review.` : "This text looks great!"}</div></div></div>
-        <div className="gwp__cats" role="tablist">{[{ id: "all" as const, label: "All", color: "#1C2024" }, ...CATEGORIES].map(c => <button key={c.id} role="tab" aria-selected={filter === c.id} className={"gwp__cat" + (filter === c.id ? " on" : "")} onClick={() => setFilter(c.id)} data-testid={`cat-${c.id}`}><i style={{ background: c.color }} />{c.label}<b>{c.id === "all" ? issues.length : counts[c.id]}</b></button>)}</div>
+        <div className="gwp__cats" role="tablist">{[{ id: "all" as const, label: "All", color: "#1C2024" }, ...CATEGORIES].map(c => <button key={c.id} role="tab" aria-selected={filter === c.id} className={"gwp__cat" + (filter === c.id ? " on" : "")} onClick={() => { setFilter(c.id); track(EVENTS.app_suggestions_filtered, { category: c.id }); }} data-testid={`cat-${c.id}`}><i style={{ background: c.color }} />{c.label}<b>{c.id === "all" ? issues.length : counts[c.id]}</b></button>)}</div>
         <div className="gwp__list" data-testid="cards">
           {shown.length === 0 && <p className="ids-muted" style={{ padding: "8px 4px" }}>{text ? "No suggestions here. Nice work." : "Suggestions will appear as you type."}</p>}
           {shown.map(i => <article key={i.id} ref={el => { cards.current[i.id] = el; }} className={"gwc" + (active === i.id ? " is-active" : "")} style={{ borderLeftColor: colorOf(i.category) }} onClick={() => focusIssue(i)} data-testid="card" data-rule={i.rule}>
@@ -52,7 +53,7 @@ export function Editor({ userId, docId }: { userId: string; docId: string }) {
             <div className="gwc__x">{i.rule === "long-sentence" || i.rule === "passive" || i.rule === "repeated-opener" ? <>“{i.text}…”</> : <s>{i.text}</s>}{i.replacements[0] !== undefined && i.rule !== "spelling" && <> → <b>{i.replacements[0] === "" ? "(remove)" : i.replacements[0]}</b></>}</div>
             <p className="gwc__m">{i.message}</p>
             <div className="tb">{i.replacements.slice(0, 3).map((r, k) => <button key={k} className={"gwc__acc" + (k ? " alt" : "")} onClick={e => { e.stopPropagation(); accept(i, r); }}>{r === "" ? "Remove" : r}</button>)}
-              {i.rule === "spelling" && <button className="iconbtn" onClick={e => { e.stopPropagation(); setDict(d => [...d, i.text]); }}>Add to dictionary</button>}
+              {i.rule === "spelling" && <button className="iconbtn" onClick={e => { e.stopPropagation(); setDict(d => [...d, i.text]); track(EVENTS.app_dictionary_word_added); }}>Add to dictionary</button>}
               <button className="iconbtn" onClick={e => { e.stopPropagation(); dismiss(i); }}>Dismiss</button></div></article>)}
         </div>
         <details className="gwp__box" open><summary>Goals</summary>
