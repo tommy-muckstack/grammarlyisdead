@@ -20,6 +20,14 @@ One PostHog project (US cloud, project **666931**) collects the hub and every Is
 
 All IsDead apps share the yourappisdead.com cookie, so the client unregisters other apps' legacy super properties at boot and re-registers ours after `reset()`.
 
+## Privacy (scrub)
+`scrub` in `lib/analytics/posthog.tsx` runs as `before_send` on every event, automatic ones included:
+- URL properties (`$current_url`, `$referrer`, `$pathname`, initial/prev variants) keep only origin + path; query strings and hashes are dropped (they can carry user content such as prefilled links).
+- The page `title` is dropped (it can be a user's own document or page name).
+- `PRIVATE_PATHS` is empty here: no path segment works like a password (only ids and public slugs).
+- Heatmaps, web-vitals/performance capture, autocapture and session replay are all off in `init`.
+Property names `source`, `app`, `app_id`, `site_id` and `environment` are reserved (legacy shared super properties); use `via` / `origin` instead.
+
 ## Identity
 Signed-in Firebase users are identified by uid (`identify(uid, "firebase")`, from `components/AppHeader.tsx`). Guests and the
 demo account are never identified; only `account_type` is registered. Sign-out tracks `app_signed_out`, then calls `reset()`.
